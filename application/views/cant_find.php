@@ -22,17 +22,11 @@
       <!--列表标题-->
 
 
-<div class="am-list-news-bd">
-  <ul class="am-list">
-    <?php foreach ($result as $key => $row) { ?>
-    <li class="am-g am-list-item-desced">
-      <a href="<?=$row['baseUrl']?>" class="am-list-item-hd"><?=$row['title']?></a>
-      <div class="am-list-item-text"><?=$row['text']?></div>
-      <div class="am-list-item-text"><?=$row['baseUrl']?> <?=$row['fetchTime']?></div>
-    </li>
-    <?php } ?>
-  </ul>
+<div>
+  <img src="<?php echo base_url()?>/src/img/cant_find.png">
+  <img src="<?php echo base_url()?>/src/img/cant_find2.png">
 </div>
+
 </div>
 </div>
 </body>

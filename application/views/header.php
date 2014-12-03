@@ -5,10 +5,10 @@
   <title>交大搜索</title>
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/amazeui.min.css">
   <link rel="stylesheet" href="php echo base_url(); ?>assets/css/admin.css">
-  <script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/amazeui.min.js"></script>
+  <script src="php echo base_url(); ?>/assets/js/jquery.min.js"></script>
+<script src="php echo base_url(); ?>/assets/js/amazeui.min.js"></script>
 <!--<![endif]-->
-<script src="assets/js/app.js"></script>
+<script src="php echo base_url(); ?>/assets/js/app.js"></script>
 
 
     <style>
@@ -31,28 +31,15 @@
 
 
 
-    /*style for navbar*/
-    .am-menu {
-      margin-left: 300px;
-    }
     /*style for search form*/
     button {
       height: 39px;
-      margin-left: 70px;
+      margin-left: 0px;
     }
 
-   input{
-      margin-left: 300px;
-    }
     .am-form-field {
-      width: 75%;
-    }
-
-    .am-accordion-title{
-      margin-left: 300px;
-    }
-    .am-accordion-content{
-      margin-left: 300px;
+      width: 100%;
+      margin:0px;
     }
   </style>
 </head>

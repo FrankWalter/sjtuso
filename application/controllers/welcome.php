@@ -2,7 +2,7 @@
 
 class Welcome extends CI_Controller {
 
-	private $url = 'http://192.168.8.114:9200/jdbc/jdbc/_search?q=text:';
+	private $url = 'http://104.207.149.222:9200/jdbc/jdbc/_search?q=text:';
 
 	public function index()
 	{
@@ -22,25 +22,31 @@ class Welcome extends CI_Controller {
 
 		$json = json_decode($content);
 
-
-		$entries = $json->hits->hits;
+		if($json->hits->total !=0){
+			$entries = $json->hits->hits;
 
 		// var_dump($entries);
 
-		$result = array();
+			$result = array();
 
-		foreach ($entries as $key => $entry) {
-			$result[$key] = array();
-			$result[$key]['title'] = $entry->_source->title;
-			$result[$key]['text'] = mb_substr($entry->_source->text, 0 , 100 );
-			$result[$key]['baseUrl'] = $entry->_source->baseUrl ;
-			$result[$key]['fetchTime'] = date('Y-m-d H:i:s' , $entry->_source->fetchTime/1000 );
-		}
+			foreach ($entries as $key => $entry) {
+				$result[$key] = array();
+				$result[$key]['title'] = $entry->_source->title;
+				$result[$key]['text'] = mb_substr($entry->_source->text, 0 , 100 );
+				$result[$key]['baseUrl'] = $entry->_source->baseUrl ;
+				$result[$key]['fetchTime'] = date('Y-m-d H:i:s' , $entry->_source->fetchTime/1000 );
+			}
 
 		// var_dump($entry);
-		$data = array('result' => $result , 'q' => urldecode($q) );
-		$this->load->view('header');
-		$this->load->view('page' , $data);
+			$data = array('result' => $result , 'q' => urldecode($q) );
+			$this->load->view('header');
+			$this->load->view('page' , $data);
+		}
+		else{
+			$this->load->view('header');
+			$this->load->view('cant_find');
+		}
+
 	}
 }
 
