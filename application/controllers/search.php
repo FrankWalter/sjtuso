@@ -24,6 +24,8 @@ class Search extends CI_Controller {
 			$this->load->view('header' , $page_data);
 			$this->load->view('search_form');
 			$this->load->view('cant_find');
+			
+			
 			return ;
 		}
 
@@ -40,8 +42,9 @@ class Search extends CI_Controller {
 		$page_data['total'] = $total;
 
 		$this->load->view('header' , $page_data);
+		$this->load->view('search_result');	
 		$this->load->view('search_form');
-		$this->load->view('search_result');
+					
 		$this->load->view('footer');
 		
 	}

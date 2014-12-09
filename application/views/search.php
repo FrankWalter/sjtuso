@@ -51,12 +51,12 @@
 
 <div class="am-g">
   <!-- the main search form -->
-  <form role="search" method="GET" action="welcome/search">
+  <form role="search" method="GET" action="<?php echo site_url('index.php/search'); ?>">
     <div class="am-u-sm-3 am-form-group">
     </div>
 
     <div class="am-u-sm-6 am-form-group">
-      <input type="text" name="q" class="am-form-field am-input-sm" placeholder="Ready to Search">
+      <input type="text" name="keyword" class="am-form-field am-input-sm" placeholder="Ready to Search">
 
     </div>
 
@@ -96,13 +96,4 @@
     </section>
   </div>
 </div>
-
-
-
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/amazeui.min.js"></script>
-<!--<![endif]-->
-<script src="assets/js/app.js"></script>
-</body>
-</html>
 
