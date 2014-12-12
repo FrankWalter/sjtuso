@@ -64,6 +64,10 @@
     #page_end_button{
       float: left;
     }
+    #cant_find{
+      margin-top:95px;
+      margin-left: 100px;
+    }
 /*style for search begin end*/
 
     /*style for search form*/

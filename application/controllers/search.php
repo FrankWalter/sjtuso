@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php 
+require 'vendor/autoload.php';
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Search extends CI_Controller {
 
@@ -12,7 +14,7 @@ class Search extends CI_Controller {
 
 		$search_data = array(
 			'keyword' => $keyword ,
-		);
+			);
 
 		$page_data = array();
 		$page_data['search_data'] = $search_data;
@@ -44,30 +46,57 @@ class Search extends CI_Controller {
 		$this->load->view('header' , $page_data);
 		$this->load->view('search_result');	
 		$this->load->view('search_form');
-					
+
 		$this->load->view('footer');
 		
 	}
-
+	public function getMillisecond() {
+		list($s1, $s2) = explode(' ', microtime());
+		return (float)sprintf('%.0f', (floatval($s1) + floatval($s2)) * 1000);
+	}
 	public function query( $search_data , $limit , $offset ){
+		
+		$this->load->model('getMillisecond_model');
+		$keyword = $this->input->get_post('keyword');
+		$conn=array();
+		$conn['hosts']=array('104.207.149.222:9200');
+		$client = new Elasticsearch\Client($conn);
+		$params = array();
+		$params['index']='jdbc';
+		$params['type']='jdbc';
+		$params['body']= [
+		    'query'=>[
+                'function_score'=>[
+                     'query'=>[
+                          'multi_match'=>[
+                              'fields'=>["title^3","text"],
+                              'query'=>$keyword
+                          ]
+                     ],
+                     'functions'=>[
+                           [                          
+                           'script_score'=>[
+                                'params'=>["param1"=>$this->getMillisecond_model->getMillisecond()],
+                                'script'=>"_score/log(param1-doc['prevFetchTime'].value+1)"
+                           ]
 
-		$keyword = $search_data['keyword'];
-		$content['query']['match']['text'] = $keyword;
-		$content['from'] = $offset?$offset:0;
-		$content['size'] = $limit;
-
-		$param['content'] = json_encode($content);
-		$param['index'] = "jdbc";
-		$param['field'] = "jdbc";
-
-
-		$this->load->model('es_model');
-		$result_str = $this->es_model->query($param);
-
-		if($result_str == null)
-			return array(null , 0);
-
-		$json = json_decode($result_str);
+                           ]
+                     ]                    
+                 ]
+		    ],
+		    'highlight'=>[
+                 'fields'=>[
+                       'content'=>[
+                       	    'type'=>"plain"
+                       ]
+                 ]
+		    ],
+		    'from'=>$offset?$offset:0,
+		    'size'=>$limit
+		];
+		$content=$client->search($params);
+		$json = json_encode($content);
+		$json = json_decode($json);
 
 		//did not find any results
 		if(!property_exists($json, 'hits') )
