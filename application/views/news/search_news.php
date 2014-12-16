@@ -17,7 +17,7 @@
 
         <ul class="am-menu-nav am-avg-sm-3">
           <li class="">
-            <a href="<?php echo site_url('index.php/search_news'); ?>">新闻</a>
+            <a href="##">新闻</a>
           </li>
           <li class="">
             <a href="##">教师</a>

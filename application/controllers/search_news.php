@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Search extends CI_Controller {
+class Search_news extends CI_Controller {
 
 	private $limit = 10;
 
@@ -15,26 +15,25 @@ class Search extends CI_Controller {
 		$search_data = array(
 			'keyword' => $keyword ,
 			);
-
+        $null_flag=0;
 		$page_data = array();
 		$page_data['search_data'] = $search_data;
 
-		list($result , $total) = $this->query($search_data , $this->limit , $offset);
+		list($result , $total) = $this->query_news($search_data , $this->limit , $offset);
 
 		//did not find any results
-		if($total ==0 ){
+		if($total ==0 && $keyword!=null){
 			$this->load->view('header' , $page_data);
-			$this->load->view('search_form');
+			$this->load->view('news/search_form_news');
 			$this->load->view('cant_find');			
 			return ;
 		}
-
 		//页码导航
 		$link_config = array(
 			'total' => $total,
 			'offset' => $offset,
 			'search_data' => $search_data ,
-			'pre_url' => 'index.php/search' ,
+			'pre_url' => 'index.php/search_news' ,
 			);
 		$this->load->model('pagination_model');
 		$page_data['link_array'] = $this->pagination_model->create_link($link_config);
@@ -42,40 +41,38 @@ class Search extends CI_Controller {
 		$page_data['total'] = $total;
 
 		$this->load->view('header' , $page_data);
-		$this->load->view('search_result');	
-		$this->load->view('search_form');
+		$this->load->view('news/search_result_news');	
+		$this->load->view('news/search_form_news');
 
 		$this->load->view('footer');
 		
 	}
-	public function query( $search_data , $limit , $offset ){
-		
+	public function query_news( $search_data , $limit , $offset ){
 		$this->load->model('getMillisecond_model');
 		$keyword = $this->input->get_post('keyword');
 		$conn=array();
 		$conn['hosts']=array('104.207.149.222:9200');
 		$client = new Elasticsearch\Client($conn);
 		$params = array();
-		$params['index']='jdbc';
-		$params['type']='jdbc';
+		$params['index']='news';
+		$params['type']=['news'];
 		$params['body']= [
 		    'query'=>[
                 'function_score'=>[
                      'query'=>[
                           'multi_match'=>[
-                              'fields'=>["title^3","text"],
+                              'fields'=>["title^3","text","content"],
                               'query'=>$keyword
                           ]
                      ],
                      'functions'=>[
                            [                          
                            'script_score'=>[
-                                'params'=>["param1"=>$this->getMillisecond_model->getMillisecond()],
-                                'script'=>"_score/log(param1-doc['prevFetchTime'].value+1)"
+                                 'script'=>"_score*exp(doc['modified_time'].value/100000000-1)"
+                           ]           
                            ]
-
-                           ]
-                     ]                    
+                     ],
+                     'boost_mode'=>"replace"                  
                  ]
 		    ],
 		    'highlight'=>[
@@ -86,8 +83,9 @@ class Search extends CI_Controller {
                  ]
 		    ],
 		    'from'=>$offset?$offset:0,
-		    'size'=>$limit
-		];
+		    'size'=>$limit,
+		    'explain'=>true
+		];	
 		$content=$client->search($params);
 		$json = json_encode($content);
 		$json = json_decode($json);
@@ -102,17 +100,17 @@ class Search extends CI_Controller {
 
 		$entries = $json->hits->hits;
 		$result = array();
+		$result['hits']=$json->hits->total;
 		foreach ($entries as $key => $entry) {
 			$result[$key] = array();
 			$result[$key]['title'] = $entry->_source->title;
 			$result[$key]['text'] = mb_substr($entry->_source->text, 0 , 100 );
-			$result[$key]['baseUrl'] = $entry->_source->baseUrl ;
-			$result[$key]['fetchTime'] = date('Y-m-d H:i:s' , $entry->_source->fetchTime/1000 );
+			$result[$key]['url'] = $entry->_source->url ;
+			//$result[$key]['modified_time'] = $entry->_source->modified_time;
+			$result[$key]['modified_time'] = date('Y-m-d H:i:s' , $entry->_source->modified_time);
+			$result[$key]['score']=$entry->_score;
 		}
-
 		return array($result , $total);
 	}
-
-	
 	
 }
