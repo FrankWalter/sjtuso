@@ -7,11 +7,18 @@
     <ul class="am-list">
       <?php echo '共有'.$result['hits'].'个结果返回'; ?>
       <?php foreach ($result as $key => $row) { 
-      $keyword = $search_data['keyword'];
-      $pattern = '/(' . $keyword .')/i';
-      $replacement = "<span class='highlight'>$1</span>";
-      $title = preg_replace($pattern , $replacement , $row['title']);
-      $text = preg_replace($pattern , $replacement , $row['text']);
+        // if(isset($search_data['keyword']) and $search_data['keyword'] != ''){
+        //   $keyword = $search_data['keyword'];
+        //   $pattern = '/(' . $keyword .')/i';
+        //   $replacement = "<span class='highlight'>$1</span>";
+        //   $title = preg_replace($pattern , $replacement , $row['title']);
+        //   $text = preg_replace($pattern , $replacement , $row['text']);
+        // }else{
+        //   $title = $row['title'];
+        //   $text = $row['text'];
+        // }
+      $title = $row['title'];
+          $text = $row['text'];
       ?>
       <li class="am-g am-list-item-desced" >
         <a href="<?=$row['url']?>" class="am-list-item-hd"><?php echo $title ;?></a>
