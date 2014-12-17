@@ -80,6 +80,10 @@
       width: 100%;
       margin:0px;
     }
+
+    .highlight{
+      color:#F00;
+    }
   </style>
 </head>
 
