@@ -53,7 +53,6 @@ class Search_news extends CI_Controller {
 		
 	}
 	public function query_news( $search_data , $limit , $offset ){
-		$this->load->model('getMillisecond_model');
 		$keyword = $this->input->get_post('keyword');
 		$conn=array();
 		$conn['hosts']=array('104.207.149.222:9200');
