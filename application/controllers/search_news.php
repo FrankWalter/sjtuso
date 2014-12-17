@@ -4,6 +4,11 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Search_news extends CI_Controller {
 
+	function __construct() {
+		parent::__construct();
+		date_default_timezone_set("Asia/Shanghai");
+	}
+
 	private $limit = 10;
 
 	public function index()
