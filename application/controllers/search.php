@@ -102,8 +102,8 @@ class Search extends CI_Controller {
 		$result['hits']=$json->hits->total;
 		foreach ($entries as $key => $entry) {
 			$result[$key] = array();
-			$result[$key]['title'] = $entry->_source->title;
-			$result[$key]['text'] = mb_substr($entry->_source->text, 0 , 100 );
+			$result[$key]['title'] = $this->highlight($keyword,$entry->_source->title);
+			$result[$key]['text'] = $this->highlight($keyword,mb_substr($entry->_source->text, 0 , 100 ));
 			$result[$key]['url'] = $entry->_source->url ;
 			//$result[$key]['modified_time'] = $entry->_source->modified_time;
 			$result[$key]['modified_time'] = date('Y-m-d H:i:s' , $entry->_source->modified_time);
@@ -111,6 +111,16 @@ class Search extends CI_Controller {
 		}
 
 		return array($result , $total);
+	}
+
+	function highlight($keyword,$content){
+		if(empty($keyword))
+			return $content;
+		else{
+			$pattern = '/('.$keyword.')/i';
+			$replacement = "<span class='highlight'>$1</span>";
+			return preg_replace($pattern, $replacement, $content);
+		}
 	}
 
 	
