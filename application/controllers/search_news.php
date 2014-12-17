@@ -96,7 +96,7 @@ class Search_news extends CI_Controller {
 		    'query'=>[
                 'function_score'=>[
                      'query'=>[
-                     	  'match'=>"_all"
+                     	  'match_all'=> new \stdClass()
                      ],
                      'functions'=>[
                            [                          
