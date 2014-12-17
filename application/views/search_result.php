@@ -5,11 +5,13 @@
 <!--列表标题-->
   <div class="am-list-news-bd">
     <ul class="am-list">
+      <?php echo '共有'.$result['hits'].'个结果返回'; ?>
       <?php foreach ($result as $key => $row) { ?>
       <li class="am-g am-list-item-desced" >
-        <a href="<?=$row['baseUrl']?>" class="am-list-item-hd"><?=$row['title']?></a>
+        <a href="<?=$row['url']?>" class="am-list-item-hd"><?=$row['title']?></a>
         <div class="am-list-item-text"><?=$row['text']?></div>
-        <div class="am-list-item-text"><?=$row['baseUrl']?> <?=$row['fetchTime']?></div>
+        <div class="am-list-item-text"><?=$row['url']?> <?=$row['modified_time']?></div>
+        <div class="am-list-item-text"><?=$row['score']?></div>
       </li>
       <?php } ?>
     </ul>

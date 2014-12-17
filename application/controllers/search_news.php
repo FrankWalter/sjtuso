@@ -4,11 +4,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Search_news extends CI_Controller {
 
-	function __construct() {
-		parent::__construct();
-		date_default_timezone_set("Asia/Shanghai");
-	}
-
 	private $limit = 10;
 
 	public function index()
@@ -27,7 +22,7 @@ class Search_news extends CI_Controller {
 		list($result , $total) = $this->query_news($search_data , $this->limit , $offset);
 
 		//did not find any results
-		if($total ==0 && $keyword!=null){
+		if($total ==0 && ($keyword!=null||$keyword!='')){
 			$this->load->view('header' , $page_data);
 			$this->load->view('news/search_form_news');
 			$this->load->view('cant_find');			
@@ -60,6 +55,7 @@ class Search_news extends CI_Controller {
 		$params = array();
 		$params['index']='news';
 		$params['type']=['news'];
+		if($keyword!=null&&$keyword!='')
 		$params['body']= [
 		    'query'=>[
                 'function_score'=>[
@@ -90,6 +86,34 @@ class Search_news extends CI_Controller {
 		    'size'=>$limit,
 		    'explain'=>true
 		];	
+		else {
+		$params['body']= [
+		    'query'=>[
+                'function_score'=>[
+                     'query'=>[
+                     	  'match'=>"_all"
+                     ],
+                     'functions'=>[
+                           [                          
+                           'script_score'=>[
+                                 'script'=>"exp(doc['modified_time'].value/100000000-1)"
+                           ]           
+                           ]
+                     ],
+                     'boost_mode'=>"replace"                  
+                 ]
+		    ],
+		    'highlight'=>[
+                 'fields'=>[
+                       'content'=>[
+                       	    'type'=>"plain"
+                       ]
+                 ]
+		    ],
+		    'from'=>$offset?$offset:0,
+		    'size'=>$limit,
+		];	
+		}
 		$content=$client->search($params);
 		$json = json_encode($content);
 		$json = json_decode($json);

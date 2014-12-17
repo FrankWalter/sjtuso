@@ -50,14 +50,13 @@ class Search extends CI_Controller {
 	}
 	public function query( $search_data , $limit , $offset ){
 		
-		$this->load->model('getMillisecond_model');
 		$keyword = $this->input->get_post('keyword');
 		$conn=array();
 		$conn['hosts']=array('104.207.149.222:9200');
 		$client = new Elasticsearch\Client($conn);
 		$params = array();
-		$params['index']='jdbc';
-		$params['type']='jdbc';
+		$params['index']='all';
+		$params['type']='all';
 		$params['body']= [
 		    'query'=>[
                 'function_score'=>[
@@ -70,19 +69,12 @@ class Search extends CI_Controller {
                      'functions'=>[
                            [                          
                            'script_score'=>[
-                                'params'=>["param1"=>$this->getMillisecond_model->getMillisecond()],
-                                'script'=>"_score/log(param1-doc['prevFetchTime'].value+1)"
+                                'script'=>"_score+log(doc['modified_time'].value+1)"
                            ]
 
                            ]
-                     ]                    
-                 ]
-		    ],
-		    'highlight'=>[
-                 'fields'=>[
-                       'content'=>[
-                       	    'type'=>"plain"
-                       ]
+                     ],
+                     'boost_mode'=>"replace"                     
                  ]
 		    ],
 		    'from'=>$offset?$offset:0,
@@ -102,12 +94,15 @@ class Search extends CI_Controller {
 
 		$entries = $json->hits->hits;
 		$result = array();
+		$result['hits']=$json->hits->total;
 		foreach ($entries as $key => $entry) {
 			$result[$key] = array();
 			$result[$key]['title'] = $entry->_source->title;
 			$result[$key]['text'] = mb_substr($entry->_source->text, 0 , 100 );
-			$result[$key]['baseUrl'] = $entry->_source->baseUrl ;
-			$result[$key]['fetchTime'] = date('Y-m-d H:i:s' , $entry->_source->fetchTime/1000 );
+			$result[$key]['url'] = $entry->_source->url ;
+			//$result[$key]['modified_time'] = $entry->_source->modified_time;
+			$result[$key]['modified_time'] = date('Y-m-d H:i:s' , $entry->_source->modified_time);
+			$result[$key]['score']=$entry->_score;
 		}
 
 		return array($result , $total);
