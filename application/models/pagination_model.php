@@ -35,8 +35,8 @@ class Pagination_model extends CI_Model
 			//设置 首页
 			if($current_page != 1)
 			{
-				$links['首页'] = '<div class=am-u-sm-1>'.'<li>'.anchor($this->url_maker(0),'Begin').'</li>'.'</div>';
-		//		$links['上一页'] = '<div class=am-u-sm-1>'.'<li>'.anchor($this->url_maker($this->offset - $this->limit),'previous').'</li>'.'</div>';
+				$links['首页'] = '<li class="am-pagination-first ">'.anchor($this->url_maker(0),'Begin').'</li>';
+				// $links['上一页'] = '<li class="am-pagination-prev ">'.anchor($this->url_maker($this->offset - $this->limit),'previous').'</li>';
 			}
 
 			//设置每一页
@@ -48,19 +48,18 @@ class Pagination_model extends CI_Model
 			{
 				if(($i+1) == $current_page)
 				{
-					$links[$i+1] = '<div class=am-u-sm-1>'.'<li class="active">'.anchor($this->url_maker($this->limit*$i),$i+1).'</li>'.'</div>';
+					$links[$i+1] = '<li class="am-active">'.anchor($this->url_maker($this->limit*$i),$i+1).'</li>';
 				}
 				else
 				{
-					$links[$i+1] = '<div class=am-u-sm-1>'.'<li>'.anchor($this->url_maker($this->limit*$i),$i+1).'</li>'.'</div>';
+					$links[$i+1] = '<li class="">'.anchor($this->url_maker($this->limit*$i),$i+1).'</li>';
 				}
 			}
 			//设置 末页
 			if($current_page != $total_page)//总页数为0也不显示
 			{
-				$links['下一页'] = '<div class=am-u-sm-1>'.'<li>'.anchor($this->url_maker($this->offset+$this->limit),'Next').'</li>'.'</div>';
-				$links['末页'] = '<div class=am-u-sm-1 id="page_end_button">'.'<li>'.anchor($this->url_maker($this->limit*($total_page-1)),'End').'</li>'.'</div>';
-				
+				$links['下一页'] = '<li class="am-pagination-next ">'.anchor($this->url_maker($this->offset+$this->limit),'Next').'</li>';
+				$links['末页'] = '<li class="am-pagination-last ">'.anchor($this->url_maker($this->limit*($total_page-1)),'End').'</li>';
 			}
 		}
 		return $links;
