@@ -1,2 +1,0 @@
-[{"query":{"function_score":{"query":{"multi_match":{"fields":["title^3","text"],"query":"u8ba1u7b97u673a"}},"field_value_factor":{"field":"score","modifier":"log1p","factor":10},"highlight":{"fields":{"content":{"type":"plain"}}},"from":0,"size":10}
-"functions":[{"script_score":{"script":"_score*doc['score'].value"}}]}}
